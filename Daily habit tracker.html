@@ -84,7 +84,72 @@
             progressFill.style.width = percent + "%";
             progressText.textContent = percent + "%";
         }
-    
+      // -- Task Manipulation Functions --
+
+    function addTask() {
+        const text = taskInput.value.trim();
+        if (text) {
+
+        tasksData.push({text: text, done: false});
+        saveTasks();
+        renderTasks();
+        updateProgress();
+
+        taskInput.value = "";//clear input
+        } else {
+            console.log("No task entered");
+
+        }
+
+        function addTaskItem(text, done, index) {
+            const li = document.createElement("li");
+            li.className = "habit";
+            if (isDone) li.classList.add("done");
+
+//task content area (checkbox and text)
+const taskContent = document.createElement("div");
+taskContent.className = "task-content";
+const checkbox = document.createElement("input");
+checkbox.type = "checkbox";
+checkbox.checked = isDone;
+checkbox.disable = isDone;
+checkbox.addEventListener("change", () => handleCheckChange(index));
+
+const taskSpan = document.createElement("span");
+taskSpan.className = "task-text";
+taskSpan.textContent = taskText;
+
+taskContent.appendChild(checkbox);
+taskContent.appendChild(taskSpan);
+li.appendChild(taskContent);
+
+//Buttons area
+const taskButtons = document.createdElement("div");
+taskButtons.className = "task-buttons";
+
+const editBtn = createButton("Edit", () => handleEditClick(index,taskSpan),isDone);
+const deleteBtn = createButton("Delete", () => handleDeleteClick(index),isDone);
+
+taskButtons.appendChild (editBtn);
+taskButtons.appendChild (deleteBtn);
+
+li.appendChild(taskButtons);
+
+taskList.appendChild(li);
+
+}
+
+function createButton(text, onClickHandler, isDisabled){
+    const btn =document.createElement("button");
+    btn.textContent = text;
+    btn.disabled = isDisabled;
+    btn.onclick = onClickHandler;
+    return btn;
+}
+
+        }
+
+
 </script>
 </body>
 </html>
