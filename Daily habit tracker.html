@@ -98,6 +98,12 @@
             } else {
                 console.log("No task entered");
             }
+        }
+
+        function addTaskItem(taskText, isDone, index) {
+            const li = document.createElement("li");
+            li.className = "habit";
+            if (isDone) li.classList.add("done");
             
         }
 
