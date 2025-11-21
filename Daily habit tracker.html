@@ -84,56 +84,6 @@
             progressFill.style.width = percent + "%";
             progressText.textContent = percent + "%";
         }
-        // --- Task Manipulation Functions ---
-
-        function addTask() {
-            const text = taskInput.value.trim();
-
-            if (text) {
-                tasksData.push({ text: text, done: false});
-                saveTasks();
-                renderTasks();
-                updateProgress();
-                taskInput.value = ""; // Clear input
-            } else {
-                console.log("No task entered");
-            }
-        }
-
-        function addTaskItem(taskText, isDone, index) {
-            const li = document.createElement("li");
-            li.className = "habit";
-            if (isDone) li.classList.add("done");
-            
-        }
-        // --Event Handlers--
-        function handleCheckChange (index) {
-            taskData[index].done = !taskData[index].done;
-            saveTasks();
-            renderTasks();
-            updateProgress();
-    
-        }
-        function handleDeleteClick(index) {
-            if (confirm(`Are you sure you want to delete "${taskData[index].text}"?`)) {
-                tasksData.splice(index, 1);
-                saveTasks();
-                renderTasks();
-                updateProgress();
-            }
-        }
-        function handleEditClick(index) {
-            const currentText = taskData[index].text;
-            const newText = prompt("Edit your habit/task:", currentText);
-            if (newText !== null && newText.trim() !== "" && newText.trim() !== currentText) {
-                taskData[index].text = newText.trim();
-                saveTasks();
-                renderTasks();
-            } else {
-                console.log("No changes made or cancelled.");
-            }
-        }
-
     
 </script>
 </body>
