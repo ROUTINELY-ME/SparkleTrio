@@ -84,6 +84,23 @@
             progressFill.style.width = percent + "%";
             progressText.textContent = percent + "%";
         }
+        // --- Task Manipulation Functions ---
+
+        function addTask() {
+            const text = taskInput.value.trim();
+
+            if (text) {
+                tasksData.push({ text: text, done: false});
+                saveTasks();
+                renderTasks();
+                updateProgress();
+                taskInput.value = ""; // Clear input
+            } else {
+                console.log("No task entered");
+            }
+            
+        }
+
     
 </script>
 </body>
