@@ -84,8 +84,7 @@
             progressFill.style.width = percent + "%";
             progressText.textContent = percent + "%";
         }
-
-        // -- Task Manipulation Functions --
+      // -- Task Manipulation Functions --
 
     function addTask() {
         const text = taskInput.value.trim();
@@ -95,7 +94,7 @@
         saveTasks();
         renderTasks();
         updateProgress();
-        
+
         taskInput.value = "";//clear input
         } else {
             console.log("No task entered");
@@ -147,11 +146,10 @@ function createButton(text, onClickHandler, isDisabled){
     btn.onclick = onClickHandler;
     return btn;
 }
-               
-        }
-    
 
-    
+        }
+
+
 </script>
 </body>
 </html>
