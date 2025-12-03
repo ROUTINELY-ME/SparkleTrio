@@ -6,31 +6,33 @@
     <title>Daily Habit Tracker</title>
 </head>
 <body>
-        <h1>Daily Health Habit Tracket 🚀</h1>
-     <div class="container"> 
-        <div class ="add-task-area"> 
+
+    <h1>Daily HealthHabit Tracker ☄️</h1>
+
+    <div class="container">
+        
+        <div class="add-task-area">
             <input type="text"
-            id="taskInput"
-            placeholder="Add a new habit/task..."
-            /> 
+                   id="taskInput"
+                   placeholder="Add a new habit/task..."
+            />
+            <button class="primary-btn" onclick="addTask()">Add</button>
+        </div>
 
-          <button class="primary-btn" onclick="addTask()">Add</button>>
-          </div>
-
-         <ul id="taskList"></ul>
+        <ul id="taskList"></ul>
 
         <div id="progressBar">
             <div id="progressFill"></div>
-            </div>
+        </div>
 
-            <div class="center">
-                <b>Progress:</b> <span id="progressText">0%</span><br>
-                <b>Streak:</b> <span id="streak">0</span>days
-            </div>
+        <div class="center">
+            <b>Progress:</b> <span id="progressText">0%</span><br>
+            <b>Streak:</b> <span id="streak">0</span> days
+        </div>
 
-            <button class="primary-btn" onclick="finishDay()">Finish Day & Reset</button>
+        <button class="primary-btn" onclick="finishDay()">Finish Day & Reset</button>
 
-            </div>
+    </div>
 
 <script>
     const taskList = document.getElementById("taskList");
@@ -39,9 +41,9 @@
     const progressText = document.getElementById("progressText");
     const streakDisplay = document.getElementById("streak");
     
-    // ---Initial Setup---
-
-    //Defualt starting habits (from our Habit Tracker example)
+    // --- Initial Setup ---
+    
+    // Default starting habits (from your Habit Tracker example)
     const initialHabits = [
         "Drink 8 glasses of water",
         "Sleep 8 hours",
@@ -49,109 +51,174 @@
         "10 minutes of exercise"
     ];
 
-    //load task from local storage ou use defaults
-    let tasksData = JSON.parse(localStorage.getItem("habits")) || initialHabbits.map(text => ({text, done: false}));
-
-    //load streak from local storage
+    // Load tasks from Local Storage or use defaults
+    let tasksData = JSON.parse(localStorage.getItem("habits")) || initialHabits.map(text => ({ text, done: false }));
+    
+    // Load streak from Local Storage
     let streak = localStorage.getItem("streak") || 0;
     streakDisplay.textContent = streak;
 
     // Render tasks on load
     renderTasks();
     updateProgress();
-    
-    //core functions
 
-    function renderTaks() {
-        taskList.innerHTML = ''; 
-        taskData.forEach((taskObj, index) => {
+    // --- Core Functions ---
+
+    function renderTasks() {
+        taskList.innerHTML = ''; // Clear existing list
+        tasksData.forEach((taskObj, index) => {
             addTaskItem(taskObj.text, taskObj.done, index);
         });
-        }
+    }
 
-        function saveTaks() {
-            localStorage.setItem("habits", JSON.stringify(tasksData));
-        }
-        function updateProgress() {
-            const total = tasksData.length;
-            let completed =0;
+    function saveTasks() {
+        localStorage.setItem("habits", JSON.stringify(tasksData));
+    }
 
-            taskData.forEach(task => {
-                if (task.done) completed++;
-            });
+    function updateProgress() {
+        const total = tasksData.length;
+        let completed = 0;
 
-            const percent = total > 0 ? Math.round((completed / total * 100)) : 0;
-            progressFill.style.width = percent + "%";
-            progressText.textContent = percent + "%";
-        }
+        tasksData.forEach(task => {
+            if (task.done) completed++;
+        });
 
-        // -- Task Manipulation Functions --
+        const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+        progressFill.style.width = percent + "%";
+        progressText.textContent = percent + "%";
+    }
+    
+    // --- Task Manipulation Functions ---
 
     function addTask() {
         const text = taskInput.value.trim();
-        if (text) {
 
-        tasksData.push({text: text, done: false});
+        if (text) {
+            tasksData.push({ text: text, done: false });
+            saveTasks();
+            renderTasks();
+            updateProgress();
+            taskInput.value = ""; // Clear input
+        } else {
+            console.log("No task entered");
+        }
+    }
+    
+    function addTaskItem(taskText, isDone, index) {
+        const li = document.createElement("li");
+        li.className = "habit";
+        if (isDone) li.classList.add("done");
+        
+        // Task Content area (Checkbox and Text)
+        const taskContent = document.createElement("div");
+        taskContent.className = "task-content";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = isDone;
+        checkbox.disabled = isDone;
+        checkbox.addEventListener("change", () => handleCheckChange(index));
+        
+        const taskSpan = document.createElement("span");
+        taskSpan.className = "task-text";
+        taskSpan.textContent = taskText;
+
+        taskContent.appendChild(checkbox);
+        taskContent.appendChild(taskSpan);
+        li.appendChild(taskContent);
+        
+        // Buttons area
+        const taskButtons = document.createElement("div");
+        taskButtons.className = "task-buttons";
+
+        // Create Edit, Delete, and Done buttons
+        const editBtn = createButton("Edit", () => handleEditClick(index, taskSpan), isDone);
+        const deleteBtn = createButton("Delete", () => handleDeleteClick(index), isDone);
+        // We use the checkbox for 'Done' status, but keeping the original Done button's logic for reference
+        // const doneBtn = createButton("Done", () => handleDoneClick(index), isDone); 
+        
+        taskButtons.appendChild(editBtn);
+        taskButtons.appendChild(deleteBtn);
+        // taskButtons.appendChild(doneBtn);
+        li.appendChild(taskButtons);
+
+        taskList.appendChild(li);
+    }
+    
+    function createButton(text, onClickHandler, isDisabled) {
+        const btn = document.createElement("button");
+        btn.textContent = text;
+        btn.disabled = isDisabled;
+        btn.onclick = onClickHandler;
+        return btn;
+    }
+
+    // --- Event Handlers ---
+
+    function handleCheckChange(index) {
+        tasksData[index].done = !tasksData[index].done;
+        saveTasks();
+        renderTasks(); // Rerender to apply 'done' styling/disabling
+        updateProgress();
+    }
+    
+    function handleDeleteClick(index) {
+        if (confirm(`Are you sure you want to delete "${tasksData[index].text}"?`)) {
+            tasksData.splice(index, 1);
+            saveTasks();
+            renderTasks();
+            updateProgress();
+        }
+    }
+
+    function handleEditClick(index, taskSpan) {
+        const currentText = tasksData[index].text;
+        const newText = prompt("Edit your habit/task", currentText);
+
+        if (newText !== null && newText.trim() !== "" && newText.trim() !== currentText) {
+            tasksData[index].text = newText.trim();
+            saveTasks();
+            renderTasks();
+            // No need to update progress, status hasn't changed
+        } else {
+            console.log("No changes made or cancelled.");
+        }
+    }
+    
+    // Function to handle the "Finish Day & Reset" button
+    function finishDay() {
+        const total = tasksData.length;
+        let completed = 0;
+        tasksData.forEach(task => {
+            if (task.done) completed++;
+        });
+        
+        const allChecked = completed === total && total > 0;
+
+        if (allChecked) {
+            streak++;
+            localStorage.setItem("streak", streak);
+            streakDisplay.textContent = streak;
+            alert(`Great job! You completed all "${total}" habits today!`);
+        } else {
+            streak = 0;
+            localStorage.setItem("streak", 0);
+            streakDisplay.textContent = 0;
+            alert("You missed some habits. Streak reset.");
+        }
+
+        // Reset all tasks to not done for the next day
+        tasksData = tasksData.map(task => ({
+            text: task.text,
+            done: false
+        }));
+
         saveTasks();
         renderTasks();
         updateProgress();
-        
-        taskInput.value = "";//clear input
-        } else {
-            console.log("No task entered");
+    }
 
-        }
-
-        function addTaskItem(text, done, index) {
-            const li = document.createElement("li");
-            li.className = "habit";
-            if (isDone) li.classList.add("done");
-
-//task content area (checkbox and text)
-const taskContent = document.createElement("div");
-taskContent.className = "task-content";
-const checkbox = document.createElement("input");
-checkbox.type = "checkbox";
-checkbox.checked = isDone;
-checkbox.disable = isDone;
-checkbox.addEventListener("change", () => handleCheckChange(index));
-
-const taskSpan = document.createElement("span");
-taskSpan.className = "task-text";
-taskSpan.textContent = taskText;
-
-taskContent.appendChild(checkbox);
-taskContent.appendChild(taskSpan);
-li.appendChild(taskContent);
-
-//Buttons area
-const taskButtons = document.createdElement("div");
-taskButtons.className = "task-buttons";
-
-const editBtn = createButton("Edit", () => handleEditClick(index,taskSpan),isDone);
-const deleteBtn = createButton("Delete", () => handleDeleteClick(index),isDone);
-
-taskButtons.appendChild (editBtn);
-taskButtons.appendChild (deleteBtn);
-
-li.appendChild(taskButtons);
-
-taskList.appendChild(li);
-
-}
-
-function createButton(text, onClickHandler, isDisabled){
-    const btn =document.createElement("button");
-    btn.textContent = text;
-    btn.disabled = isDisabled;
-    btn.onclick = onClickHandler;
-    return btn;
-}
-               
-        }
-    
-
-    
 </script>
+
 </body>
 </html>
